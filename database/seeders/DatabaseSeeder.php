@@ -13,11 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Panggil seeder Roles dulu, baru seeder Admin
+        $this->call([
+            RolesSeeder::class,
+            SuperAdminSeeder::class,
         ]);
     }
 }
