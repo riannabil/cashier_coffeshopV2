@@ -50,7 +50,9 @@
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4">
                                         <span
-                                            class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                                            class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5{{ $user->roles->first()->name === 'Admin' ? 'bg-red-100 text-red-800' : '' }}
+    {{ $user->roles->first()->name === 'Manajer' ? 'bg-blue-100 text-blue-800' : '' }}
+    {{ $user->roles->first()->name === 'Karyawan' ? 'bg-green-100 text-green-800' : '' }}">
                                             {{ $user->roles->first()->name ?? 'Tanpa Role' }}
                                         </span>
                                     </td>
@@ -76,7 +78,13 @@
                         @endif
 
                     </tbody>
+
+
                 </table>
+                <div class="mt-4">
+                    {{ $users->links() }}
+                </div>
+
             </div>
 
         </div>
@@ -153,7 +161,8 @@
 
                         <!-- Gaji Pokok -->
                         <div>
-                            <label for="base_salary" class="block text-sm font-medium text-gray-700">Gaji Pokok</label>
+                            <label for="base_salary" class="block text-sm font-medium text-gray-700">Gaji
+                                Pokok</label>
                             <input type="number" id="base_salary" wire:model.defer="base_salary"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 placeholder="Contoh: 5000000">

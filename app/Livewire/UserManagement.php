@@ -7,10 +7,12 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Spatie\Permission\Models\Role; // <-- 1. Import Role
 use Illuminate\Support\Facades\Hash; // <-- 2. Import Hash
+use Livewire\WithPagination;
 
 #[Layout('layouts.app')] // Tentukan layout utama kita
 class UserManagement extends Component
 {
+    use WithPagination;
     // Properti untuk menampung data form
     public $name;
     public $email;
@@ -21,6 +23,10 @@ class UserManagement extends Component
     public $showModal = false;
     public $userId; // <-- Tambahkan ini
     public $confirmingDelete = false; // <-- dan ini
+    public $search = '';
+    public $perPage = 10; // jumlah data per halaman
+
+    protected $paginationTheme = 'tailwind'; // untuk styling pagination
 
     /**
      * mount() dijalankan saat component di-load pertama kali.
@@ -76,6 +82,7 @@ class UserManagement extends Component
         $role = Role::findById($this->role_id);
         $user->assignRole($role);
 
+        $this->dispatch('user-created', message: 'User baru berhasil di edit!');
         // Langkah 4: Reset form dan tutup modal
         $this->closeModal();
     }
@@ -115,6 +122,7 @@ class UserManagement extends Component
             'password' => $this->password ? Hash::make($this->password) : $user->password,
         ]);
 
+        $this->dispatch('user-updated', message: 'User baru berhasil di edit!');
         // update role
         $role = Role::findById($this->role_id);
         $user->syncRoles([$role]);
@@ -139,13 +147,21 @@ class UserManagement extends Component
         $this->dispatch('user-deleted', message: 'User berhasil dihapus!');
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage(); // reset halaman saat search berubah
+    }
+
 
     /**
      * Fungsi render() akan mengambil data terbaru dan menampilkan view.
      */
     public function render()
     {
-        $users = User::all();
+        // $users = User::all();
+        $users = User::where('name', 'like', "%{$this->search}%")
+            ->orWhere('email', 'like', "%{$this->search}%")
+            ->paginate($this->perPage);
         return view('livewire.user-management', [
             'users' => $users
         ]);
